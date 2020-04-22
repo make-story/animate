@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width, minimal-ui" />
+<title>animate Test</title>
+
+<!-- CSS //-->
+<link rel="stylesheet" type="text/css" href="/css/api.min.css">
+<link rel="stylesheet" type="text/css" href="/css/media.min.css">
+<style type="text/css">
+.wrap-group {
+	margin: 20px 0;
+}
+.wrap-group h1, .wrap-group p {
+	padding: 8px 0;
+}
+.animate-test {
+	position: absolute;
+	width: 50px;
+	height: 50px;
+	border: 1px double rgb(44, 45, 46);
+}
+</style>
+</head>
+<body class="header-none media">
+<div id="wrap" class="">
+	<!-- header //-->
+	<!-- header id="header" class="">
+		<div class="box clear-after">
+			<div class="logo left">
+				<a href="/kit"><svg class="symbol" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="24px" height="24px" viewBox="0 0 24 24" enable-background="new 0 0 24 24" xml:space="preserve"><path fill="#E7444E" d="M24,23c0,0.553-0.447,1-1,1H1c-0.552,0-1-0.447-1-1V1c0-0.552,0.448-1,1-1h22c0.553,0,1,0.448,1,1V23z"/><rect x="4" y="4" fill="#FFFFFF" width="6" height="2"/><rect x="10" y="12" fill="#FFFFFF" width="2" height="8"/><rect x="12" y="14" fill="#FFFFFF" width="2" height="2"/><rect x="16" y="14" fill="#FFFFFF" width="2" height="2"/><rect x="14" y="16" fill="#FFFFFF" width="2" height="2"/><rect x="18" y="12" fill="#FFFFFF" width="2" height="8"/></svg></a><a href="/kit/#/" class="title">makeapi</a>
+			</div>
+		</div>
+	</header -->
+
+	<section class="paper">
+		<div class="domain-top-left"><!-- 상단좌축 //--></div>
+		<div class="domain-top-right"><!-- 상단우측 //--></div>
+		<div class="domain-bottom-left"><!-- 하단좌측 //--></div>
+		<div class="domain-bottom-right"><!-- 하단우측 //--></div>
+
+		<!-- 컨텐츠 //-->
+		<div class="area-padding">
+			<header class="header style1">
+				<div class="subject clause-common">
+					<div class="bar"><!-- bar //--></div>
+					<h2 class="headline">Animate Test</h2>
+					<h3 class="subtitle">AnimationFrame / Transition / Animation</h3>
+				</div>
+			</header>
+			<article class="article clause-common">
+				<button class="button-normal" id="button_test1">#a</button>
+				<button class="button-normal" id="button_test2">#b</button>
+				<button class="button-normal" id="button_test3">.a</button>
+				<button class="button-normal" id="button_test4">.b</button>
+				<div style="position: relative; min-height: 800px; border: 1px solid #eee;">
+					<div id="a" class="not-basics-transition animate-test" style="left: 0px; top: 0px;">id: a</div>
+					<div id="b" class="not-basics-transition animate-test" style="left: 50px; top: 50px;">id: b</div>
+
+					<div class="a not-basics-transition animate-test" style="left: 100px; top: 100px;">class: a</div>
+					<div class="a not-basics-transition animate-test" style="left: 150px; top: 150px;">class: a</div>
+					<div class="b not-basics-transition animate-test" style="left: 200px; top: 200px;">class: b</div>
+					<div class="b not-basics-transition animate-test" style="left: 250px; top: 250px;">class: b</div>
+				</div>
+			</article>
+		</div>
+	</section>
+
+	<footer id="footer" class="clear">
+		<p class="copyright">Copyright (c). by Sung-min Yu.</tr>
+	</footer>
+</div>
+
+<!-- JS //-->
+<!--script src="http://code.jquery.com/jquery-1.12.0.min.js"></script-->
+<script src="//makestory.net/test/js/api.browser.js"></script>
+<script src="//makestory.net/test/js/api.animate.js"></script>
+<script>
+// 테스트 
+var $;
+if(typeof api === 'object' && api !== null && api.dom) {
+	$ = api.dom;
+}else if(typeof jQuery !== 'undefined') {
+	$ = jQuery;
+}else {
+	$ = function() {};
+}
+
+var transtionendName = '';
+(function() {
+	var div = document.createElement('div');
+	var transitions = { // event check (IE10이상 공식지원)
+		"transition": "transitionend", 
+		"WebkitTransition": "webkitTransitionEnd", 
+		"MozTransition": "transitionend", 
+		"OTransition": "oTransitionEnd",
+		"msTransition": "MSTransitionEnd"
+	};
+	var key;
+
+	// 트랜지션
+	for(key in transitions) {
+		if(div.style[key] !== undefined) {
+			transtionendName = transitions[key];
+			break;
+		}
+	}
+})();
+console.log('transtionendName', transtionendName);
+
+
+// isArray 폴리필
+if(!Array.isArray) {
+	Array.isArray = function(arg) {
+		return Object.prototype.toString.call(arg) === '[object Array]';
+	};
+}
+
+// keys 폴리필
+// From https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys
+if(!Object.keys) {
+	Object.keys = (function() {
+		'use strict';
+		var hasOwnProperty = Object.prototype.hasOwnProperty,
+			hasDontEnumBug = !({ toString: null }).propertyIsEnumerable('toString'),
+			dontEnums = [
+				'toString',
+				'toLocaleString',
+				'valueOf',
+				'hasOwnProperty',
+				'isPrototypeOf',
+				'propertyIsEnumerable',
+				'constructor'
+			],
+			dontEnumsLength = dontEnums.length;
+
+		return function(obj) {
+			if(typeof obj !== 'object' && (typeof obj !== 'function' || obj === null)) {
+				throw new TypeError('Object.keys called on non-object');
+			}
+
+			var result = [], prop, i;
+
+			for(prop in obj) {
+				if (hasOwnProperty.call(obj, prop)) {
+					result.push(prop);
+				}
+			}
+
+			if(hasDontEnumBug) {
+				for(i = 0; i < dontEnumsLength; i++) {
+					if(hasOwnProperty.call(obj, dontEnums[i])) {
+						result.push(dontEnums[i]);
+					}
+				}
+			}
+			return result;
+		};
+	}());
+}
+
+// 정규식
+var regexp = {
+	pixel_unit_list: /width$|height$|top|right|bottom|left|fontSize|letterSpacing|lineHeight|^margin*|^padding*/i, // 단위 px 해당되는 것
+	time_unit_list: /.+(-duration|-delay)$/i, // seconds (s) or milliseconds (ms)
+	num: /^[+-]?\d+(\.\d+)?$/, // 숫자
+	source_num: /[+-]?(?:\d*\.|)\d+(?:[eE][+-]?\d+|)/.source // +=, -= 숫자와 연산자 분리
+};
+
+// 숫자/단위 분리 (예: 10px -> [0]=>10px, [1]=>10, [2]=>'px')
+var getNumberUnit = function(value) {
+	var regexp_source_num = /[+-]?(?:\d*\.|)\d+(?:[eE][+-]?\d+|)/.source;
+	var regexp_number = new RegExp("^(" + regexp_source_num + ")(.*)$", "i");
+	var matches = regexp_number.exec(value);
+	if(matches) {
+		return matches;
+	}else {
+		return [value];
+	}
+};
+
+// 숫자만 추출
+var numberReturn = function(value) { 
+	return String(value).replace(/[^+-\.\d]|,/g, '');
+};
+
+//requestAnimationFrame, cancelAnimationFrame
+var setRequestAnimationFrame = (function() { 
+	// https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame
+	return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback) { return window.setTimeout(callback, 1000 / 60); /* 60 FPS (1 / 0.06) */ };
+})();
+var setCancelAnimationFrame = (function() {
+	// https://developer.mozilla.org/en-US/docs/Web/API/Window/cancelAnimationFrame
+	return window.cancelAnimationFrame || window.webkitCancelAnimationFrame || window.mozCancelAnimationFrame || window.oCancelAnimationFrame || window.msCancelAnimationFrame || function(time) { return window.clearTimeout(time); };
+})();
+
+var setFrame = function(queue) {
+	if(typeof queue !== 'object') {
+		return false;
+	}else if(!Array.isArray(queue)) {
+		queue = [queue];
+	}
+	
+	(function call(queue) {
+		var config = queue.shift(); // 현재 순서에 해당하는 정보
+		var $element = $(config['element']); // 대상 element - .class 가 각각 다른 초기 값을 가질 경우, 예상과 다른 결과가 나올 수 있다.
+		var style = config['style']; // 애니메이션을 적용할 CSS값 - {CSS 속성: 값}
+		var duration = config['duration'] || 600; // 애니메이션 진행시간
+		//var easing = config['easing'];
+		var complete = config['complete'];
+
+		var easeOutQuad = function (t, b, c, d) {
+			return -c *(t/=d)*(t-2) + b;
+		};
+		var easeInOutQuad = function (t, b, c, d) {
+			if((t/=d/2) < 1) {
+				return c/2*t*t + b;
+			}else {
+				return -c/2 * ((--t)*(t-2) - 1) + b;
+			}
+		};
+		var total = $element.length;
+		
+		$element.each(function(index) {	
+			var $element = $(this);
+			var start; // 애니메이션 시작값 (기존 css등 설정값)
+			var end; // 애니메이션 종료값 (사용자 설정값)
+			var key, tmp;
+
+			var properties = {};
+			var current = 0;
+			var increment = 20;
+			var request = null;
+			var setFrame;
+
+			// start, end 값 추출
+			for(key in style) {
+				start = $element.css(key); // 기존 설정값
+				end = style[key]; // 사용자 설정값
+				properties[key] = {}; // 설정할 스타일값 생성
+				if(start) {
+					tmp = getNumberUnit(start); // 단위 분리
+					if(Array.isArray(tmp)) { 
+						// tmp[0]: 원본
+						// tmp[1]: 숫자
+						// tmp[2]: 단위 (예: px, em, %, s)
+						properties[key]['start'] = start = Number(tmp[1] || 0);
+						properties[key]['start_unit'] = tmp[2];
+					}
+					tmp = getNumberUnit(end); // 단위 분리
+					if(Array.isArray(tmp)) { 
+						// tmp[0]: 원본
+						// tmp[1]: 숫자
+						// tmp[2]: 단위 (예: px, em, %, s)
+						properties[key]['end'] = end = Number(tmp[1] || 0);
+						properties[key]['end_unit'] = tmp[2];
+					}
+					// 변경 스타일값 - 시작 스타일값
+					properties[key]['change'] = end - start;
+				}
+			}
+	
+			// 애니메이션 프레임 함수 (반복실행)
+			setFrame = function frame() {
+				var key, tmp;
+				var val, unit;
+				
+				// increment the time
+				current += increment;
+				for(key in properties) {
+					if(regexp.num.test(properties[key]['start']) && regexp.num.test(properties[key]['change'])) {
+						// 적용 값
+						val = easeOutQuad(current, Number(properties[key]['start']), Number(properties[key]['change']), duration); 
+						if(regexp.pixel_unit_list.test(key)) {
+							// opacity 등 소수점 단위는 제외
+							val = Math.round(val); // 반올림
+						}
+						// 단위값이 없을 경우 설정
+						unit = properties[key]['end_unit'] || properties[key]['start_unit'] || '';
+						if(!unit) {
+							// property default value 단위가 px 에 해당하는 것
+							if(regexp.pixel_unit_list.test(key)) {
+								unit = 'px';
+							}else {
+								//console.log('[경고] 단위 없음');
+								continue;
+							}
+						}
+						// style 적용 
+						tmp = {};
+						tmp[key] = val + unit;
+						$element.css(tmp);
+					}
+				}
+				// frame
+				if(current < duration) {
+					request = setRequestAnimationFrame(frame);
+				}else {
+					setCancelAnimationFrame(request);
+					// last loop
+					if(index === (total-1)) {
+						// complete 실행
+						if(typeof complete === 'function') {
+							complete.call($element, val);
+						}
+						// 다음 실행할 queue 가 존재할 경우
+						if(queue.length) {
+							//console.log('[정보] next queue 실행');
+							call(queue);
+						}
+					}
+				}
+			};
+			
+			setCancelAnimationFrame(request);
+			setFrame();
+		});
+	})(queue);
+};
+
+var setTransition = function(queue) {
+	if(typeof queue !== 'object') {
+		return false;
+	}else if(!Array.isArray(queue)) {
+		queue = [queue];
+	}
+	var state = { // 트랜지션 종료 후 적용할 초기 style
+		/*
+		// 기본값 https://developer.mozilla.org/ko/docs/Web/CSS/transition
+		transition: 
+		transition-property: all
+		transition-duration: 0s
+		transition-timing-function: ease 또는 cubic-bezier(0.25, 0.1, 0.25, 1)
+		transition-delay: 0s
+		*/
+		'msTransition': /^$/,
+		'OTransition': /^$/,
+		'MozTransition': /^$/,
+		'WebkitTransition': /^$/,
+		'transition': /^$/,
+
+		'msTransitionProperty': /^(all)$/i,
+		'OTransitionProperty': /^(all)$/i,
+		'MozTransitionProperty': /^(all)$/i,
+		'WebkitTransitionProperty': /^(all)$/i,
+		'transitionProperty': /^(all)$/i,
+
+		'msTransitionDuration': /^(0s)$/i,
+		'OTransitionDuration': /^(0s)$/i,
+		'MozTransitionDuration': /^(0s)$/i,
+		'WebkitTransitionDuration': /^(0s)$/i,
+		'transitionDuration': /^(0s)$/i,
+
+		'msTransitionTimingFunction': /^(ease|cubic-bezier+)$/i,
+		'OTtransitionTimingFunction': /^(ease|cubic-bezier+)$/i,
+		'MozTransitionTimingFunction': /^(ease|cubic-bezier+)$/i,
+		'WebkitTransitionTimingFunction': /^(ease|cubic-bezier+)$/i,
+		'transitionTimingFunction': /^(ease|cubic-bezier+)$/i,
+
+		'msTransitionDelay': /^(0s)$/i,
+		'OTransitionDelay': /^(0s)$/i,
+		'MozTransitionDelay': /^(0s)$/i,
+		'WebkitTransitionDelay': /^(0s)$/i,
+		'transitionDelay': /^(0s)$/i
+	};
+
+	(function call(queue) {
+		var config = queue.shift(); // 현재 순서에 해당하는 정보
+		var $element = $(config['element']); // 대상 element
+		var style = config['style']; // 트랜지션을 적용할 CSS값 - {CSS 속성: 값}
+		var duration = config['duration'] || 600; 
+		var easing = config['easing'] || 'ease'; 
+		var delay = config['delay'] || 0; // 효과가 시작할 때까지의 딜레이
+		var complete = config['complete']; // 애니메이션 종료 후 콜백 (complete)
+		
+		var properties = {}; // css 적용 프로퍼티 
+		var transitionend = {}; // transitionend 이벤트 실행된 것 (true)
+		var element = $element.get();
+		var i, max, key, tmp;
+
+		// transition 값 확인
+		for(key in style) {
+			if(!/^(animation*|transition*)/i.test(key)) { // animation, transition 관련작업은 제외됨
+				properties[key] = style[key];
+			}
+		}
+
+		// 초기값 저장 / transition 설정
+		for(i=0, max=element.length; i<max; i++) {
+			if(typeof element[i] !== 'object' || !element[i].nodeType) {
+				continue;
+			}
+			// 현재 상태값 저장
+			if(typeof element[i]['storage'] !== 'object') {
+				element[i]['storage'] = {};
+			}
+			if(typeof element[i]['storage']['transition'] !== 'object') {
+				element[i]['storage']['transition'] = {};
+				for(key in state) {
+					//tmp = element[i]['style'][key];
+					tmp = $(element[i]).css(key);
+					if(tmp && !state[key].test(tmp)) { 
+						// 현재 element에 설정된 style의 값이 state 목록에 지정된 기본값(style property default value)이 아니므로 
+						// 현재 설정된 값을 저장(종료 후 현재값으로 재설정)
+						element[i]['storage']['transition'][key] = tmp;
+					}else { 
+						// 현재 element에 설정된 style의 값이 state 목록에 지정된 기본값(style property default value)과 동일하거나 없으므로 
+						// 작업 후 해당 property 초기화(삭제)
+						element[i]['storage']['transition'][key] = ''; // '' 또는 null
+					}
+				}
+			}
+
+			// transition 설정
+			element[i]['style'].msTransitionProperty = element[i]['style'].OTransitionProperty = element[i]['style'].MozTransitionProperty = element[i]['style'].WebkitTransitionProperty = element[i]['style'].transitionProperty = Object.keys(properties).join(',');
+			element[i]['style'].msTransitionDuration = element[i]['style'].OTransitionDuration = element[i]['style'].MozTransitionDuration = element[i]['style'].WebkitTransitionDuration = element[i]['style'].transitionDuration = Number(duration) / 1000 + 's';
+			element[i]['style'].msTransitionTimingFunction = element[i]['style'].OTtransitionTimingFunction = element[i]['style'].MozTransitionTimingFunction = element[i]['style'].WebkitTransitionTimingFunction = element[i]['style'].transitionTimingFunction = easing;
+			//element[i]['style'].msTransitionDelay = element[i]['style'].OTransitionDelay = element[i]['style'].MozTransitionDelay = element[i]['style'].WebkitTransitionDelay = element[i]['style'].transitionDelay = Number(delay) / 1000 + 's';
+		}
+
+		// 스타일 / 이벤트 설정 
+		$element.css(properties);
+		$element.on(transtionendName + '.EVENT_TRANSITION_QUEUE', function(e) {
+			var event = (typeof e === 'object' && e.originalEvent || e) || window.event; // originalEvent: jQuery Event
+			var currentTarget = event.currentTarget;
+			var target = event.target || event.srcElement;
+			var propertyName = event.propertyName; // 트랜지션 실행된 프로퍼티명 
+			var i, max, key;
+
+			//console.log('[정보] 트랜지션 종료', event);
+			/*console.log('event', event);
+			console.log('currentTarget', currentTarget);
+			console.log('target', target);
+			console.log('transitionend', transitionend);
+			console.log('propertyName', propertyName);*/
+			if(currentTarget && target && currentTarget.isEqualNode(target) && transitionend[propertyName] !== true) { 
+				// 해당 프로퍼티 실행상태로 변경 
+				transitionend[propertyName] = true;
+
+				// 모든 transitionend 실행되었는지 여부 확인
+				if(Object.keys(properties).length === Object.keys(transitionend).length) {
+					$element.off(transtionendName + '.EVENT_TRANSITION_QUEUE');
+
+					// transition 설정 초기화
+					for(i=0, max=element.length; i<max; i++) {
+						if(typeof element[i] !== 'object' || !element[i].nodeType) {
+							continue;
+						}
+						if(element[i]['storage']) {
+							for(key in element[i]['storage']['transition']) {
+								element[i]['style'][key] = element[i]['storage']['transition'][key];
+							}
+						}
+					}
+
+					// complete 실행
+					if(typeof complete === 'function') {
+						complete.call(element, event);
+					}
+
+					// 다음 실행할 queue 가 존재할 경우 (재귀호출)
+					if(queue.length) {
+						//console.log('[정보] next queue 실행');
+						call(queue);
+					}
+				}
+			}
+		});
+	})(queue);
+};
+
+var test = {
+	/**
+	 * requestAnimationFrame polyfill
+	 */
+	requestAnimationFrame: setRequestAnimationFrame,
+	
+	/**
+	 * cancelAnimationFrame polyfill
+	 */
+	cancelAnimationFrame: setCancelAnimationFrame,
+	
+	/**
+	 * javascript requestAnimationFrame
+	 * frame({'element': '.h2', 'style': {'left': '100px', 'top': '100px', 'width': '100px', 'height': '100px'}});
+	 * frame([{'element': $('#h2'), 'style': {'left': '100px', 'top': '100px'}}, {...}, ... ]);
+	 */
+	frame: setFrame,
+	
+	/**
+	 * css transition
+	 * transition({'element': '#view', 'style': {'left': '100px', 'top': '100px'}});
+	 * transition([{'element': $('#view'), 'style': {'left': '100px', 'top': '100px'}}, {...}, ... ]);
+	 */
+	 transition: setTransition
+};
+
+
+// 실행중인 애니메이션 정지 기능 개발해야함!!
+// 해당 앨리먼트가 애니메이션 중인지 확인하는 기능 개발해야함!!
+api.dom('#button_test1').off('click').on('click', function(event) {
+	/*test.frame([
+		{
+			'element': '#a',
+			'style': {
+				'left': '100px',
+				'top': '100px'
+			},
+			'complete': function() {
+				console.log(this);
+			}
+		},
+		{
+			'element': '#a',
+			'style': {
+				'left': '0px',
+				'top': '0px'
+			},
+			'complete': function() {
+				console.log(this);
+			}
+		}
+	]);*/
+	test.frame({
+		'element': '#a',
+		'style': {
+			'left': '50px',
+			'top': '50px'
+		},
+		'complete': function() {
+			console.log(this);
+		}
+	});
+});
+
+api.dom('#button_test2').off('click').on('click', function(event) {
+	test.transition([
+		{
+			'element': '#b',
+			'style': {
+				'left': '0px',
+				'top': '0px'
+			},
+			'complete': function() {
+				console.log(this);
+			}
+		},
+		{
+			'element': '#b',
+			'style': {
+				'left': '50px',
+				'top': '50px'
+			},
+			'complete': function() {
+				console.log(this);
+			}
+		}
+	]);
+});
+
+api.dom('#button_test3').off('click').on('click', function(event) {
+	test.frame([
+		{
+			'element': '.a',
+			'style': {
+				'left': '50px',
+				'top': '50px'
+			},
+			'complete': function() {
+				console.log(this);
+			}
+		},
+		{
+			'element': '.a',
+			'style': {
+				'left': '0px',
+				'top': '50px'
+			},
+			'complete': function() {
+				console.log(this);
+			}
+		}
+	]);
+});
+
+api.dom('#button_test4').off('click').on('click', function(event) {
+	test.frame([
+		{
+			'element': '.b',
+			'style': {
+				'left': '50px',
+				'top': '50px'
+			},
+			'complete': function() {
+				console.log(this);
+			}
+		},
+		{
+			'element': '.b',
+			'style': {
+				'left': '0px',
+				'top': '100px'
+			},
+			'complete': function() {
+				console.log(this);
+			}
+		}
+	]);
+});
+</script>
+</body>
+</html>
