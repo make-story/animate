@@ -1,4 +1,8 @@
-# 에디터 (Editor)
+> `https://github.com/make-story/ui.git` 저장소에서 코드 관리  
+
+-----
+
+# 애니메이션
 
 > 실행예제
 http://makeapi.net/test/animate.html  
